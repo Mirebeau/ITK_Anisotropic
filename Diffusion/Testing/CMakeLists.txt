@@ -1,0 +1,8 @@
+set(DiffusionTest_Headers
+   ${CMAKE_CURRENT_SOURCE_DIR}/DiffusionTest.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/DiffusionBasicTest.h
+   PARENT_SCOPE
+)
+
+set(PROJECT_DIR ${PROJECT_DIR} ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+

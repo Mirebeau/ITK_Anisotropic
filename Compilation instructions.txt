@@ -1,0 +1,8 @@
+Compilation instructions.
+
+1. Download CMAKE.
+
+2. Choose the project of interest to you : a) Diffusion, b) FastMarching, or c) Matlab interfaces to these.
+Instruct CMAKE to use the corresponding sub-directory as a source directory, and to create a project.
+
+3. In case c) Matlab, build the project in release mode. Then in the project sub-folder MFiles (! not the source sub-folder!) run with Matlab the file CompileMexDiffusion or CompileMexFastMarching. 

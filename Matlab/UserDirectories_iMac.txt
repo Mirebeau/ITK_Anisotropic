@@ -1,0 +1,8 @@
+set(ITK_DIR "/Users/mirebeau/bin/InsightToolkit/InsightToolkit-4.3.1")
+set(MATLAB_APP "/Applications/MATLAB_R2010a.app")
+
+set(MATLAB_LIB_SUBDIR "/bin/maci64")
+set(MATLAB_INCLUDE_SUBDIR "/extern/include")
+set(ITKFM_DIR "/Users/mirebeau/Dropbox/Programmes/2012/9 Septembre/ITK/ITKFM")
+
+
