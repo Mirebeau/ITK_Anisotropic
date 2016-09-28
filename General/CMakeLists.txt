@@ -7,6 +7,7 @@ set(General_Headers
    ${CMAKE_CURRENT_SOURCE_DIR}/StructureTensorImageFilter.h
    ${CMAKE_CURRENT_SOURCE_DIR}/SyntheticImageSource.h
    ${CMAKE_CURRENT_SOURCE_DIR}/UnaryFunctorWithIndexImageFilter.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/Macro.h
    PARENT_SCOPE
 )
 

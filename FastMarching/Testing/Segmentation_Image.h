@@ -10,6 +10,7 @@
 #define ITKFM_Segmentation_Image_h
 
 #include "Segmentation_Test.h"
+#include "itkFileTools.h"
 
 namespace AnisotropicFastMarching_Segmentation_Test {
 
@@ -38,6 +39,8 @@ namespace AnisotropicFastMarching_Segmentation_Test {
         auto writer = itk::ImageFileWriter<ScalarImageType>::New();
         writer->SetFileName(testPrefix+testImageFilename);
         writer->SetInput(multFilter->GetOutput());
+        
+        itk::FileTools::CreateDirectory("Hello");
         
         writer->Update();
     }

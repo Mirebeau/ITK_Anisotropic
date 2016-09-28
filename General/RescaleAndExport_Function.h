@@ -67,9 +67,10 @@ namespace Tests {
         auto image = ImageType::New();
         image->SetRegions(region);
         image->Allocate();
-        for(index[0]=0; index[0]<size[0]; ++index[0]){
-            for(index[1]=0; index[1]<size[1]; ++index[1]){
-                image->GetPixel(index) = index[0]+index[1] < size[0];
+        for(index[0]=0; index[0]<(itk::IndexValueType)size[0]; ++index[0]){
+            for(index[1]=0; index[1]<(itk::IndexValueType)size[1]; ++index[1]){
+                image->GetPixel(index)
+                = index[0]+index[1] < (itk::IndexValueType)size[0];
             } // for index[1]
         } // for index[0]
         

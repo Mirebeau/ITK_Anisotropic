@@ -24,31 +24,16 @@
 namespace CommandLineMain_Subroutines {
     void Usage();
     template <typename PixelType> int Execute(int,char**);
-    template <typename PixelType> int Execute_Multiscale(int,char**);
     
-/*
-    struct FileFormat { enum Case {Unknown, Meta, Image, Mathematica, TXT}; };
+    template<typename PointType>
+    int ImportPointListFromFile(std::string,std::vector<PointType> &);
     
-    template<unsigned int Dimension>
-    int ImportPointListFromFile(const char *,
-                                std::vector<itk::Point<double,Dimension> > &,
-                                FileFormat::Case=FileFormat::Unknown);
-
-    template<unsigned int Dimension>
-    int ExportPointListToFile(const char *,
-                              const std::vector<itk::Point<double,Dimension> > &,
-                              FileFormat::Case=FileFormat::Unknown);
- */
-    template<unsigned int Dimension>
-    int ImportPointListFromFile(std::string,std::vector<itk::Point<double,Dimension> > &);
-    
-    template<unsigned int Dimension>
-    int ExportPointListToFile(std::string,const std::vector<itk::Point<double,Dimension> > &);
+    template<typename PointType>
+    int ExportPointListToFile(std::string,const std::vector<PointType> &);
     
     std::string GetExtension(std::string fn){return fn.substr(fn.find_last_of(".") + 1);}
     using std::cerr;
 }
-//template <unsigned int Dimension> GetIndices(char**,itk::Index<Dimension>&,Index<);
 
 int CommandLineMain(int argc, char * argv[])
 {
@@ -145,6 +130,8 @@ namespace CommandLineMain_Subroutines {
         cerr << "Fourth argument (optional) : ouput image filename (write)" << endl;
 
         cerr << endl;
+        
+        /*TODO : several seeds and tips*/
     }
     
     template<typename NormType>
@@ -158,8 +145,7 @@ namespace CommandLineMain_Subroutines {
         typedef itk::Image<NormType,Dimension> NormImageType;
         typedef typename NormImageType::Pointer NormImagePointerType;
         typedef itk::Index<Dimension> IndexType;
-        typedef itk::Point<double,Dimension> PointType;
-        typedef itk::ContinuousIndex<double, Dimension> ContinuousIndexType;
+        typedef itk::Point<ValueType,Dimension> PointType;
         
         // Import the image
         
@@ -177,44 +163,36 @@ namespace CommandLineMain_Subroutines {
         const auto RequestedRegion = NormImage->GetRequestedRegion();
         cerr << "RequestedRegion : " << RequestedRegion << endl;
         
-        // Try to import specified values
-        std::vector<IndexType> PathEndIndices;
         
-        if( ! (std::string(EndPointsFileName) == "0") ){
+        std::vector< PointType > PathEndPoints;
+        if( ! (std::string(EndPointsFileName) == "0") ){ // Try to import specified values
             
-            std::vector< PointType > PathEndPoints;
             const char * EndPointsFileName = argv[argumentOffset++];
-            // ImportPointListFromFile<Dimension>(EndPointsFileName, PathEndPoints, FileFormat::Unknown);
             try { ImportPointListFromFile(EndPointsFileName, PathEndPoints); }
             catch(itk::ExceptionObject &e){
                 cerr << "Invalid endpoints (in) file " << EndPointsFileName << " \n " << e << endl;
                 return EXIT_FAILURE;
             }
-            PathEndIndices.resize(PathEndPoints.size());
-            for(int i=0; i<PathEndIndices.size(); ++i)
-                NormImage->TransformPhysicalPointToIndex(PathEndPoints[i], PathEndIndices[i]);
-            //#pragma message("To do : take into account remainder, to create geodesic continuous indices ? Will not work for origin.");
         } else { // default : opposite corners
             IndexType Center;
-            for(int i=0; i<Dimension; ++i)
+            for(int i=0; i<(int)Dimension; ++i)
                 Center[i] = (RequestedRegion.GetIndex()[i]+RequestedRegion.GetUpperIndex()[i])/2;
             
             //PathEndIndices.push_back(RequestedRegion.GetIndex());
-            PathEndIndices.push_back(Center);
-            PathEndIndices.push_back(RequestedRegion.GetUpperIndex());
+            PathEndPoints.resize(2);
+            NormImage->TransformIndexToPhysicalPoint(Center,PathEndPoints[0]);
+            NormImage->TransformIndexToPhysicalPoint(RequestedRegion.GetUpperIndex(),PathEndPoints[1]);
         }
         
+        /*
         for(auto it = PathEndIndices.begin(); it!=PathEndIndices.end(); ++it)
             if( !RequestedRegion.IsInside(*it))
-                itkGenericExceptionMacro("Point " << *it << " is outside requested region " << RequestedRegion);
+                itkGenericExceptionMacro("Point " << *it << " is outside requested region " << RequestedRegion);*/
         
-        if(PathEndIndices.size() < 2)
+        if(PathEndPoints.size() < 2)
             itkGenericExceptionMacro("Not enough endpoints");
         
-        cout << "Path endpoints " << PathEndIndices[0] << ", " << PathEndIndices[1] << endl;
-        
-        //   cerr << "PathOrigin : " << PathOrigin << ", norm  : " << NormImage->GetPixel(PathOrigin) << endl;
-        //   cerr << "PathEnd : " << PathEnd << ", norm  : " << NormImage->GetPixel(PathEnd) << endl;
+        cout << "Path endpoints " << PathEndPoints[0] << ", " << PathEndPoints[1] << endl;
         
         typedef itk::AnisotropicFastMarchingImageFilter<NormType> AFMType;
         
@@ -226,7 +204,9 @@ namespace CommandLineMain_Subroutines {
         typename AFMType::NodeType node;
         
         node.SetValue( 0. );
-        node.SetIndex( PathEndIndices[0] );
+        if(! NormImage->TransformPhysicalPointToIndex(PathEndPoints[0], node.GetIndex()) )
+            itkGenericExceptionMacro("Start point not in image.");
+        
         
         seeds->Initialize();
         seeds->InsertElement( 0, node );
@@ -263,10 +243,8 @@ namespace CommandLineMain_Subroutines {
         }
         
         // Extracting the geodesic
-        
-        typedef typename AFMType::GeodesicContinuousIndex GeodesicContinuousIndexType;
-        std::vector<GeodesicContinuousIndexType> geodesic;
-        geodesic.push_back(GeodesicContinuousIndexType(ContinuousIndexType(PathEndIndices[1])));
+        std::vector<PointType> geodesic;
+        geodesic.push_back(PathEndPoints[1]);
         
         cout << "Extracting the geodesic" << endl;
         AFM->Geodesic(geodesic);
@@ -274,26 +252,18 @@ namespace CommandLineMain_Subroutines {
         // Write the path...
         // Possibilities : SWC (up to 3D), meta object (painful, uselessly general), 1D image of points (chosen here).
         
-        std::vector<PointType> geodesicPoints;
-        for(auto it=geodesic.begin(); it!=geodesic.end(); ++it){
-            ContinuousIndexType P;
-            for(int j=0; j<Dimension; ++j) P[j] = it->first[j]+it->second[j];
-            PointType Q;
-            NormImage->TransformContinuousIndexToPhysicalPoint(P,Q);
-            geodesicPoints.push_back(Q);
-        }
-        
-        ExportPointListToFile(GeodesicFileName,geodesicPoints);
+        ExportPointListToFile<PointType>(GeodesicFileName,geodesic);
         
         return EXIT_SUCCESS;
     }
         
     // ************************* Import Point list routine **************************
     
-    template<unsigned int Dimension>
+    template<typename PointType>
     int ImportPointListFromFile(std::string filename,
-                                std::vector<itk::Point<double,Dimension> > & Points)
+                                std::vector<PointType> & Points)
     {
+        const unsigned int Dimension = PointType::PointDimension;
         const std::string extension = GetExtension(filename);
         
         if(extension=="meta")
@@ -328,7 +298,7 @@ namespace CommandLineMain_Subroutines {
             while(std::getline(f,line)){
                 std::stringstream linestream(line);
                 itk::Point<double,Dimension> P;
-                for(int i=0; i<Dimension; ++i){
+                for(int i=0; i<(int)Dimension; ++i){
                     if(linestream >> P[i]) continue;
                     itkGenericExceptionMacro("ImportPointListFromFile error ! Requires one point per line, coordinates separated by spaces.");
                 }
@@ -371,10 +341,11 @@ namespace CommandLineMain_Subroutines {
     
     // ************************* Export Point List routine ************************
     
-    template<unsigned int Dimension>
+    template<typename PointType>
     int ExportPointListToFile(std::string filename,
-                              const std::vector<itk::Point<double,Dimension> > & Points)
+                              const std::vector<PointType> & Points)
     {
+        const unsigned int Dimension = PointType::PointDimension;
         const std::string extension = GetExtension(filename);
         
         if(extension=="txt")
@@ -383,7 +354,7 @@ namespace CommandLineMain_Subroutines {
             f.open(filename.c_str());
             if(!f) return EXIT_FAILURE;
             for(auto it=Points.begin(); it!=Points.end(); ++it){
-                for(int i=0; i<Dimension; ++i)
+                for(int i=0; i<(int)Dimension; ++i)
                     f << it->operator[](i) << " ";
                 f << endl;
             }
@@ -397,7 +368,7 @@ namespace CommandLineMain_Subroutines {
             for(auto it = Points.begin(); it!=Points.end(); ++it){
                 if(it!=Points.begin()) f << ",";
                 f << "{";
-                for(int i=0; i<Dimension; ++i){
+                for(int i=0; i<(int)Dimension; ++i){
                     if(i!=0) f << ",";
                     f << (*it)[i];
                 }

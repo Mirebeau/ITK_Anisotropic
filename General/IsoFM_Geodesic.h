@@ -26,6 +26,7 @@ const typename itk::FastMarchingUpwindGradientImageFilter<itk::Image<ValueType,D
     typedef itk::CovariantVector<ValueType,Dimension> CovariantVectorType;
     typedef itk::Point<ValueType,Dimension> PointType;
     typedef itk::ContinuousIndex<ValueType,Dimension> ContinuousIndexType;
+    typedef itk::Matrix<ValueType,Dimension,Dimension> MatrixType;
     
     IndexType p = Geodesic[0].first;
     VectorType v = Geodesic[0].second;
@@ -43,10 +44,14 @@ const typename itk::FastMarchingUpwindGradientImageFilter<itk::Image<ValueType,D
     
     const itk::IndexValueType IndexToIgnore = itk::NumericTraits<itk::IndexValueType>::max();
 
-#pragma message("To do: convert components to ValueType")
-    typedef itk::Matrix<double,Dimension,Dimension> MatrixType;
-    const MatrixType Direction = Gradient->GetDirection();
-    const MatrixType DualDirection = MatrixType(MatrixType(Direction.GetTranspose()).GetInverse());
+    typedef itk::Matrix<double,Dimension,Dimension> MatrixTypeD;
+    const MatrixTypeD DirectionD = Gradient->GetDirection();
+    const MatrixTypeD DualDirectionD = MatrixTypeD(MatrixTypeD(DirectionD.GetTranspose()).GetInverse());
+    
+    MatrixType DualDirection;
+    for(int i=0; i<(int)Dimension; ++i)
+        for(int j=0; j<(int)Dimension; ++j)
+            DualDirection(i,j) = DualDirectionD(i,j);
     
     int counter=0;
     while(true){
@@ -134,7 +139,7 @@ int IsoFM_Geodesic(std::vector<itk::ContinuousIndex<ValueType, Dimension>  > & G
     IsoFM_Geodesic<ValueType,Dimension>(rawGeodesic,Gradient);
     
     Geodesic.resize(rawGeodesic.size());
-    for(int i=1; i<Geodesic.size(); ++i){
+    for(int i=1; i<(int)Geodesic.size(); ++i){
         for(int j=0; j<Dimension; ++j){
             Geodesic[i][j] = rawGeodesic[i].first[j]+rawGeodesic[i].second[j];
         }

@@ -23,7 +23,7 @@ struct mxIO {
     
     template<typename FieldType>
     FieldType
-    GetObject(std::string) const;
+    GetObject(std::string) const; 
     
     template<typename FieldType>
     FieldType

@@ -31,6 +31,7 @@ namespace AnisotropicFastMarching_Topographic_Test {
     typedef ScalarType ComponentType;
     typedef itk::Point<ComponentType,Dimension> PointType;
     
+    
     struct PathType {
         ScalarType sampling = 100, width=0.4;
         const SpacingType spacing = SpacingType(1/8.);
@@ -107,7 +108,7 @@ namespace AnisotropicFastMarching_Topographic_Test {
             struct FunctorType {
                 NormType operator()(CovariantVectorType g){
                     NormType m;
-                    for(int i=0; i<Dimension; ++i)
+                    for(int i=0; i<(int)Dimension; ++i)
                         for(int j=0; j<=i; ++j)
                             m(i,j) = (i==j)+0.3*g[i]*g[j];
                     return m;

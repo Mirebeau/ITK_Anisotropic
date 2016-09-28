@@ -53,9 +53,9 @@ namespace itk {
         typedef Index<Dimension> IndexType;
         typedef Offset<Dimension> OffsetType;
         static OffsetType ShortOffset_to_Offset(const ShortOffsetType &u){
-            OffsetType U; for(int i=0; i<Dimension; ++i) U[i]=u[i]; return U;}
+            OffsetType U; for(int i=0; i<(int)Dimension; ++i) U[i]=u[i]; return U;}
         static OffsetType PrimaryShortOffset_to_Offset(const PrimaryShortOffsetType &u){
-            OffsetType U; for(int i=0; i<PrimaryDimension; ++i) U[i]=u[i]; U[PrimaryDimension]=0; return U;}
+            OffsetType U; for(int i=0; i<(int)PrimaryDimension; ++i) U[i]=u[i]; U[PrimaryDimension]=0; return U;}
         
         PrimaryNorm & GetPrimaryNorm()              {return this->first;}
         const PrimaryNorm & GetPrimaryNorm() const  {return this->first;}
@@ -81,7 +81,7 @@ namespace itk {
                 const int j = i-stencil.size();
                 if(j<0){
                     PrimaryShortOffsetType u = stencil[i];
-                    for(int i=0; i<PrimaryDimension; ++i) U[i]=u[i];
+                    for(int i=0; i<(int)PrimaryDimension; ++i) U[i]=u[i];
                 } else if(j==0){
                     U[PrimaryDimension] = 1;
                 } else {
@@ -108,21 +108,22 @@ namespace itk {
         
         void SetNthComponent(int c, const ComponentType &v)
         {
-            assert(0<=c && c<GetNumberOfComponents());
-            if(c<PrimaryNorm::GetNumberOfComponents()) GetPrimaryNorm().SetNthComponent(c,v);
+            assert(0<=c && c<(int)GetNumberOfComponents());
+            if(c<(int)PrimaryNorm::GetNumberOfComponents()) GetPrimaryNorm().SetNthComponent(c,v);
             else GetScalar() = v;
         }
         
         ComponentType GetNthComponent(int c)
         {
-            assert(0<=c && c<GetNumberOfComponents());
-            if(c<PrimaryNorm::GetNumberOfComponents()) return GetPrimaryNorm().GetNthComponent(c);
+            assert(0<=c && c<(int)GetNumberOfComponents());
+            if(c<(int)PrimaryNorm::GetNumberOfComponents()) return GetPrimaryNorm().GetNthComponent(c);
             else return GetScalar();
         }
         
         void SetIdentity(){GetPrimaryNorm().SetIdentity(); GetScalar() = 1;}
         
         bool IsDefinite() const {return GetPrimaryNorm().IsDefinite() && GetScalar()>0;}
+        bool IsInfinite() const {return GetPrimaryNorm().IsInfinite();}
         
 #pragma remark("Remove when old template mess is eliminated.")
 /*

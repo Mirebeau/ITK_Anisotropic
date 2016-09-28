@@ -101,7 +101,7 @@ void Tubular3D_Test(){
             const ComponentType inverseSquaredSpeed = 1-vesselness;
             
             TensorType output;
-            for(int i=0; i<Dimension; ++i){
+            for(int i=0; i<(int)Dimension; ++i){
                 for(int j=0; j<i; ++j)
                     output(i,j)=0;
                 if(i==order[0])
@@ -163,7 +163,7 @@ void Tubular3D_Test(){
         
         MetricType::IndexType index;
         MetricType::SizeType size;
-        for(int i=0; i<Dimension; ++i){
+        for(int i=0; i<(int)Dimension; ++i){
             index[i] = baseRegion.GetIndex()[i];
             size[i] = baseRegion.GetSize()[i];
         }

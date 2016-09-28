@@ -102,7 +102,7 @@ namespace itk {
             const DirectStencilType stencil = Direct(P);
             unsigned int size = stencil.size();
             
-            for(int i=0; i<size; ++i){
+            for(int i=0; i<(int)size; ++i){
                 const ShortOffsetType ShortOffset = stencil[i];
                 const IndexType Q = P+NormType::ShortOffset_to_Offset(ShortOffset);
                 if(!BufferedRegion.IsInside(Q)) continue;
@@ -128,7 +128,7 @@ namespace itk {
             const DirectStencilType stencil = Direct(P);
             unsigned int size = stencil.size();
             
-            for(int i=0; i<size; ++i){
+            for(int i=0; i<(int)size; ++i){
                 const ShortOffsetType ShortOffset = stencil[i];
                 const IndexType Q = P+NormType::ShortOffset_to_Offset(ShortOffset);
                 if(!BufferedRegion.IsInside(Q)) continue;

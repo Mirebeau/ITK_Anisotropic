@@ -17,9 +17,9 @@ namespace itk {
     RiemannianNormBase<TC,ND>::Product(const VectorType &u) const
     {
         VectorType V;
-        for(int i=0; i<Dimension; ++i){
+        for(int i=0; i<(int)Dimension; ++i){
             V[i]=0;
-            for(int j=0; j<Dimension; ++j)
+            for(int j=0; j<(int)Dimension; ++j)
                 V[i]+=coef(i,j)*u[j];
         }
         return V;
@@ -64,8 +64,8 @@ namespace itk {
                 break;
                 
             case 3:
-                for(int i=0; i<Dimension; ++i)
-                    for(int j=i; j<Dimension; ++j)
+                for(int i=0; i<(int)Dimension; ++i)
+                    for(int j=i; j<(int)Dimension; ++j)
                         inv(i,j) = (coef((i+1)%3,(j+1)%3)*coef((i+2)%3,(j+2)%3)-coef((i+1)%3,(j+2)%3)*coef((i+2)%3,(j+1)%3))/d;
                 break;
                 
@@ -78,11 +78,11 @@ namespace itk {
     template<typename TC, unsigned int ND>
     TC RiemannianNormBase<TC,ND>::WeightsType::operator()(int i) const
     {
-        assert(0<=i && i<ND); 
+        assert(0<=i && i<(int)ND);
         assert(!IsNullWeights());
-        if(i<ND-1) return this->operator[](i);
+        if(i<(int)ND-1) return this->operator[](i);
         ValueType sum=this->operator[](0);
-        for(int i=1; i<ND-1; ++i) sum+=this->operator[](i);
+        for(int i=1; i<(int)ND-1; ++i) sum+=this->operator[](i);
         return 1-sum;
     }
     
@@ -92,6 +92,23 @@ namespace itk {
         for(int i=0; i<Dimension; ++i)
             for(int j=0; j<Dimension; ++j)
                 Basis[i][j] = (i==j);
+    }
+    
+    template<typename TC, unsigned int ND>
+    bool RiemannianNormBase<TC,ND>::IsDiagonal() const {
+        for(int i=0; i<(int)Dimension; ++i)
+            for(int j=0; j<i; ++j)
+                if(coef(i,j)!=0) return false;
+        return true;
+    }
+    
+    template <typename TC, unsigned int ND>
+    RiemannianNormBase<TC,ND> RiemannianNormBase<TC,ND>::RankOneTensor(const VectorType & v) {
+        RiemannianNormBase m;
+        for(int i=0; i<Dimension; ++i)
+            for(int j=0; j<Dimension; ++j)
+                m(i,j)=v[i]*v[j];
+        return m;
     }
     
 } //namespace itk

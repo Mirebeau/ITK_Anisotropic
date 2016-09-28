@@ -26,13 +26,13 @@ namespace itk {
         
         static const ShortOffsetValueType IndexToIgnore(){return NumericTraits<ShortOffsetValueType>::max();}
         
-        static OffsetType ShortOffset_to_Offset(const ShortOffsetType &u){OffsetType U; for(int i=0; i<Dimension; ++i) U[i]=u[i]; return U;}
+        static OffsetType ShortOffset_to_Offset(const ShortOffsetType &u){OffsetType U; for(int i=0; i<(int)Dimension; ++i) U[i]=u[i]; return U;}
                 
         
         struct Stencil {
             const ShortOffsetType * const pCompressedStencil;
-            const unsigned int compressedStencilSize;
-            inline unsigned int size() const
+            const int compressedStencilSize;
+            inline int size() const
             {
                 if(CentroSymmetric) return 2*compressedStencilSize;
                 else return compressedStencilSize;
@@ -46,7 +46,7 @@ namespace itk {
                 } else
                     return pCompressedStencil[i];
             }
-            Stencil(const ShortOffsetType * pCompressedStencil_, unsigned int compressedStencilSize_):
+            Stencil(const ShortOffsetType * pCompressedStencil_, int compressedStencilSize_):
             pCompressedStencil(pCompressedStencil_),compressedStencilSize(compressedStencilSize_){};
         };
         

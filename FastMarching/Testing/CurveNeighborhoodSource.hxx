@@ -94,7 +94,7 @@ namespace itk {
         // Set the seeds.
         IndexSetType indexSet;
         for(const auto & path : paths){
-            for(int i=0; i+1<path.size(); ++i){
+            for(int i=0; (i+1)<(int)path.size(); ++i){
                 indexSet.clear();
                 SegmentPoints(path[i], path[i+1], indexSet);
                 PointType p,q;
@@ -143,7 +143,7 @@ namespace itk {
                 
         IndexSetType indexSet;
         for(const auto & path : paths){
-            for(int i=0; i+1<path.size(); ++i){
+            for(int i=0; (i+1)<(int)path.size(); ++i){
                 indexSet.clear();
                 SegmentPoints(path[i], path[i+1], indexSet);
                 PointType p,q;
@@ -220,7 +220,7 @@ namespace itk {
             pathLengths.resize(pathLengths.size()+1);
             if(path.size()==0) continue;
             pathLengths.back().push_back(length);
-            for(int i=0; i+1<path.size(); ++i){
+            for(int i=0; (i+1)<(int)path.size(); ++i){
                 PointType p,q;
                 output->TransformContinuousIndexToPhysicalPoint(path[i],p);
                 output->TransformContinuousIndexToPhysicalPoint(path[i+1],q);
@@ -386,7 +386,7 @@ namespace itk {
             if(path.size() != data.size())
                 itkExceptionMacro("ExtendDataToNeighborhood error : size of path and of data is inconsistent, at position " << counter << ".");
             
-            for(int i=0; i+1<path.size(); ++i){
+            for(int i=0; (i+1)<(int)path.size(); ++i){
                 indexSet.clear();
                 SegmentPoints(path[i], path[i+1], indexSet);
                 PointType p,q;
@@ -410,7 +410,7 @@ namespace itk {
         } // for path
         
         typedef typename DataImageType::PixelType DataType;
-        ExtendDataToNeighborhood<DataType>(dataImage);
+        ExtendDataToNeighborhood<DataType>(dataImage); // To do : cast ITK Pointer to standard pointer
         return dataImage;
     }
     
@@ -419,14 +419,19 @@ namespace itk {
     void
     CurveNeighborhoodSource<TLS>::ExtendDataToNeighborhood(Image<DataType,Dimension> * dataImage) const {
         typename SuperClass::GradientImagePointer gradientImage = this->GetGradientImage();
-        typedef itk::Matrix<double,Dimension,Dimension> MatrixType;
-        const MatrixType Direction = gradientImage->GetDirection();
-        const MatrixType DualDirection = MatrixType(MatrixType(Direction.GetTranspose()).GetInverse());
+        typedef itk::Matrix<double,Dimension,Dimension> MatrixTypeD;
+        const MatrixTypeD DirectionD = gradientImage->GetDirection();
+        const MatrixTypeD DualDirectionD = MatrixTypeD(MatrixTypeD(DirectionD.GetTranspose()).GetInverse());
+        typedef itk::Matrix<ScalarType, Dimension, Dimension> MatrixType;
         
-        
+        MatrixType DualDirection;
+        for(int i=0; i<(int)Dimension; ++i)
+            for(int j=0; j<(int)Dimension; ++j)
+                DualDirection(i,j) = DualDirectionD(i,j);
+                
         for(const IndexType & index : orderedIndices){
             const auto gradient = gradientImage->GetPixel(index);            
-            const auto signedWeights = - (DualDirection*gradient);
+            const auto signedWeights = - (DualDirection*gradient); // To do : cast direction matric to avoid ambiguity
             
             ScalarType l1Norm = 0;
             for(int i=0; i<Dimension; ++i)

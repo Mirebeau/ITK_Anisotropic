@@ -19,7 +19,6 @@
 #include "Finsler2DNorm.h"
 #include "Riemannian3DNorm.h"
 #include "UnrollingConstructors.h"
-#include "mxArrayToImage.h"
 
 int main(int argc, char* argv[])
 {

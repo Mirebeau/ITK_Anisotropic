@@ -13,9 +13,6 @@
 #include <sstream>
 #include "mex.h"
 
-//template<int MessageGrade=0>
-//class MexMessageWrapper;
-
 template<int MessageGrade=0>
 struct MexMessageWrapper {
     enum MexMessageGrade {Normal,Warning,Error};

@@ -72,7 +72,7 @@ namespace itk {
                 
                 gradient_weights[0]=1;
                 gradient_weights[1]=0;
-                //gradient_weights[Dimension-1] implicitly defined
+                //gradient_weights[Dimension-1] is implicitly defined
                 
                 
                 // Finding out who is the closest point p in parameter space
@@ -80,7 +80,7 @@ namespace itk {
                 ValueType Dp = NumericTraits<ValueType>::max();
                 typename IndicesType::ValueType IndexP;
                 
-                for(int e=primarySize; e<stencil.size(); ++e){
+                for(int e=primarySize; e<(int)stencil.size(); ++e){
                     const ShortOffsetType BSOp = stencil[e];
                     OffsetType Op = pNorm->ShortOffset_to_Offset(BSOp);
                     
@@ -237,7 +237,7 @@ namespace itk {
                 gradient_weights[0]=1; gradient_weights[1]=0;
                 
                 // circle around points and segments.
-                for(int y_i=0; y_i<primarySize; ++y_i){
+                for(int y_i=0; y_i<(int)primarySize; ++y_i){
                     //hides the previous instance of y_i on purpose (
                     PrimaryShortOffsetType BSOy = primaryStencil[y_i];
                     OffsetType Oy = pNorm->PrimaryShortOffset_to_Offset(BSOy);
@@ -390,10 +390,10 @@ namespace itk {
                 // Estimate from the point y alone
                 D = Dy+primaryNorm.Norm(Vy);
                 gradient_indices[0]=y_i;
-                for(int i=1; i<Dimension; ++i) gradient_indices[i] = PrimaryNorm::IndexToIgnore();
+                for(int i=1; i<(int)Dimension; ++i) gradient_indices[i] = PrimaryNorm::IndexToIgnore();
                 
                 gradient_weights[0]=1;
-                for(int i=1; i<Dimension-1; ++i) gradient_weights[i]=0;
+                for(int i=1; i<(int)Dimension-1; ++i) gradient_weights[i]=0;
                 
                 
                 // Finding out who is the closest point p in parameter space
@@ -401,7 +401,7 @@ namespace itk {
                 ValueType Dp = NumericTraits<ValueType>::max();
                 typename IndicesType::ValueType IndexP;
                 
-                for(int e=primarySize; e<stencil.size(); ++e){
+                for(int e=primarySize; e<(int)stencil.size(); ++e){
                     const ShortOffsetType BSOp = stencil[e];
                     OffsetType Op = pNorm->ShortOffset_to_Offset(BSOp);
                     
@@ -560,7 +560,7 @@ namespace itk {
                 gradient_weights[1]=0;
                 
                 // circle around points and segments.
-                for(int y_i=0; y_i<primarySize; ++y_i){
+                for(int y_i=0; y_i<(int)primarySize; ++y_i){
                     //hides the previous instance of y_i on purpose (
                     const PrimaryShortOffsetType BSOy = primaryStencil[y_i];
                     const OffsetType Oy = pNorm->PrimaryShortOffset_to_Offset(BSOy);
@@ -719,10 +719,10 @@ namespace itk {
                 // Estimate from the point y alone
                 D = Dy+primaryNorm.Norm(Vy);
                 gradient_indices[0]=y_i;
-                for(int i=1; i<Dimension; ++i) gradient_indices[i] = PrimaryNorm::IndexToIgnore();
+                for(int i=1; i<(int)Dimension; ++i) gradient_indices[i] = PrimaryNorm::IndexToIgnore();
                 
                 gradient_weights[0]=1;
-                for(int i=1; i<Dimension-1; ++i) gradient_weights[i]=0;
+                for(int i=1; i<(int)Dimension-1; ++i) gradient_weights[i]=0;
                 
                 
                 // Finding out who is the closest point p in parameter space
@@ -730,7 +730,7 @@ namespace itk {
                 ValueType Dp = NumericTraits<ValueType>::max();
                 typename IndicesType::ValueType IndexP;
                 
-                for(int e=primarySize; e<stencil.size(); ++e){
+                for(int e=primarySize; e<(int)stencil.size(); ++e){
                     const ShortOffsetType BSOp = stencil[e];
                     OffsetType Op = pNorm->ShortOffset_to_Offset(BSOp);
                     
@@ -801,7 +801,7 @@ namespace itk {
                 bool B[max_nN];
                 PrimaryVectorType V[max_nN];
                 ValueType d0[max_nN];
-                for(int i=0; i<nN; ++i){
+                for(int i=0; i<(int)nN; ++i){
                     const unsigned int z_i = N[i];
                     const PrimaryShortOffsetType & BSOz=primaryStencil[z_i];
                     V[i] = PrimaryVectorType(BSOz);
@@ -813,7 +813,7 @@ namespace itk {
                 }
                 
                 // Minimizations associated to edges [y,z]
-                for(int i=0; i<nN; ++i){
+                for(int i=0; i<(int)nN; ++i){
                     if(!B[i]) continue;
                     const PrimaryVectorType & Vz = V[i];
                     const ValueType Dz=d0[i];
@@ -892,7 +892,7 @@ namespace itk {
                 } // for edges
                 
                 // Minimizations associated to faces [y,z,t]
-                for(int i=0; i<nN; ++i){
+                for(int i=0; i<(int)nN; ++i){
                     const unsigned int j=(i+1)%nN;
                     if(!B[i] || !B[j]) continue;
                     
@@ -992,10 +992,10 @@ namespace itk {
                 
                 D = Dp+sqrt(N2p);
                 
-                for(int i=0; i<Dimension-1; ++i) gradient_indices[i]=PrimaryNorm::IndexToIgnore();
+                for(int i=0; i<(int)Dimension-1; ++i) gradient_indices[i]=PrimaryNorm::IndexToIgnore();
                 gradient_indices[Dimension-1]=p_i;
                 
-                for(int i=0; i<Dimension-1; ++i) gradient_weights[i]=0;
+                for(int i=0; i<(int)Dimension-1; ++i) gradient_weights[i]=0;
                 //gradient weights[Dimension-1] implicitly defined to 1
                 
                 //Cache values
@@ -1004,7 +1004,7 @@ namespace itk {
                 PrimaryVectorType V[max_N];
                 ValueType d0[max_N];
                 
-                for(int i=0; i<primarySize; ++i){
+                for(int i=0; i<(int)primarySize; ++i){
                     const PrimaryShortOffsetType & BSOz=primaryStencil[i];
                     V[i] = PrimaryVectorType(BSOz);
                     const IndexType z=x+pNorm->PrimaryShortOffset_to_Offset(BSOz);
@@ -1016,7 +1016,7 @@ namespace itk {
                 
                 
                 // enumerate all stencil points in physical space.
-                for(int y_i=0; y_i<primarySize; ++y_i){
+                for(int y_i=0; y_i<(int)primarySize; ++y_i){
                     //hides the previous instance of y_i on purpose
                     
                     if(!B[y_i]) continue;

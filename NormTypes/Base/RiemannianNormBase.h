@@ -39,7 +39,11 @@ namespace itk {
         
         RiemannianNormBase(){};
         RiemannianNormBase(const SuperClass &M):SuperClass(M){};
-        RiemannianNormBase(const SuperClass &M, const SpacingType &s){for(int i=0; i<Dimension; ++i) for(int j=0; j<=i; ++j) coef(i,j)=M(i,j)*s[i]*s[j]; }
+        RiemannianNormBase(const SuperClass &M, const SpacingType &s){
+            for(int i=0; i<(int)Dimension; ++i)
+                for(int j=0; j<=i; ++j)
+                    coef(i,j)=M(i,j)*s[i]*s[j];
+        }
         
         ///Determinant is only implemented in dimensions 2 and 3.
         ValueType GetDeterminant() const;
@@ -48,7 +52,7 @@ namespace itk {
         RiemannianNormBase GetInverse() const;
         
         ///Is this a diagonal matrix ?
-        bool IsDiagonal() const {for(int i=0; i<Dimension; ++i) for(int j=0; j<i; ++j) if(coef(i,j)!=0) return false; return true;}
+        bool IsDiagonal() const;
         
         ///Matrix Vector Product
         VectorType operator*(const VectorType &u) const {return Product(u);}
@@ -74,17 +78,12 @@ namespace itk {
             ValueType operator()(int i) const;            
         };
         
+        bool IsInfinite() const {return Dimension>=1 && coef(0,0)==std::numeric_limits<TComponent>::infinity();}
+        
         static void SetCanonicalBasis(VectorType[Dimension]);
         
         /// Constructs the rang one matrix "v*Transpose(v)"
-        static RiemannianNormBase RankOneTensor(const VectorType & v)
-        {
-            RiemannianNormBase m;
-            for(int i=0; i<Dimension; ++i)
-                for(int j=0; j<Dimension; ++j)
-                    m(i,j)=v[i]*v[j];
-            return m;
-        }
+        static RiemannianNormBase RankOneTensor(const VectorType & v);
         
     protected:
         ValueType &         coef(unsigned int row, unsigned int col)        {return this->operator()(row,col);}

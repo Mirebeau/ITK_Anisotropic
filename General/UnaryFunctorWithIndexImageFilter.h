@@ -43,7 +43,7 @@ namespace itk {
         typedef typename InputImageType::RegionType     InputRegionType;
         typedef typename OutputImageType::RegionType    OutputRegionType;
 
-        virtual void ThreadedGenerateData(const OutputRegionType & region, ThreadIdType threadId){
+        virtual void ThreadedGenerateData(const OutputRegionType & region, ThreadIdType){
             if(region.GetSize()[0]==0) return;
             
             ImageRegionConstIteratorWithIndex<InputImageType>   inputIt(    this->GetInput(),   region);

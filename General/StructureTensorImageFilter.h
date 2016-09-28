@@ -11,6 +11,9 @@
 
 #include "itkCastImageFilter.h"
 #include "itkGradientRecursiveGaussianImageFilter.h"
+#include "itkAddImageFilter.h"
+#include "itkVectorIndexSelectionCastImageFilter.h"
+#include "itkGradientImageFilter.h"
 
 namespace itk {
     /**
@@ -19,9 +22,8 @@ namespace itk {
      */
     template<
     typename TImage,
-    typename TTensorImage = Image<SymmetricSecondRankTensor<
-            typename NumericTraits<typename TImage::PixelType>::RealType ,
-            TImage::ImageDimension >,
+    typename TTensorImage = Image<
+        SymmetricSecondRankTensor<typename TImage::PixelType,TImage::ImageDimension >,
         TImage::ImageDimension>
     >
     class StructureTensorImageFilter : public ImageToImageFilter<TImage, TTensorImage> {
@@ -37,6 +39,7 @@ namespace itk {
         itkTypeMacro(StructureTensorImageFilter, Superclass);
         
         typedef TImage ImageType;
+        typedef typename ImageType::PixelType PixelType;
         static const unsigned int Dimension = ImageType::ImageDimension;
         typedef TTensorImage TensorImageType;
         typedef typename TensorImageType::PixelType TensorType;
@@ -47,55 +50,42 @@ namespace itk {
         itkSetMacro(NoiseScale, ScalarType);
         ///Parameter \f$\rho\f$ of the structure tensor definition.
         itkSetMacro(FeatureScale, ScalarType);
-
+        ///Rescales all structure tensors by a common factor, so that the maximum trace is 1.
+        itkSetMacro(RescaleForUnitMaximumTrace, bool);
+        
         itkGetConstMacro(NoiseScale, ScalarType);
         itkGetConstMacro(FeatureScale, ScalarType);
+        itkGetConstMacro(RescaleForUnitMaximumTrace, bool);
+        itkGetConstMacro(PostRescaling, ScalarType); /// Global rescaling constant used.
         
+        bool m_UseGradientRecursiveGaussianImageFilter;
     protected:
         virtual void GenerateData();
         
-        ScalarType m_FeatureScale=5, m_NoiseScale=1;
+        ScalarType m_FeatureScale, m_NoiseScale;
+        bool m_RescaleForUnitMaximumTrace;
+        ScalarType m_PostRescaling;
+        
+        template<typename Dummy=void, bool b=std::numeric_limits<PixelType>::is_specialized>
+        struct IntermediateFilter;
+        typename TensorImageType::Pointer intermediateResult;
+        
+        typedef CovariantVector<ScalarType,Dimension> CovariantVectorType;
+        typedef Image<CovariantVectorType,Dimension> CovariantImageType;
+        
+        struct OuterFunctor;
+        struct TraceFunctor;
+        struct ScaleFunctor;
+        
+        StructureTensorImageFilter(){
+            m_FeatureScale=2;
+            m_NoiseScale=1;
+            m_RescaleForUnitMaximumTrace=false;
+            m_UseGradientRecursiveGaussianImageFilter=true;
+        }
     };
-    
-    // No hxx file for such trivial composite filter.
-    template<typename TI, typename TTI>
-    void StructureTensorImageFilter<TI,TTI>::GenerateData(){
-        typedef CastImageFilter<ImageType, ScalarImageType> CasterType;
-        typename CasterType::Pointer caster = CasterType::New();
-        caster->SetInput(this->GetInput());
-        
-        typedef GradientRecursiveGaussianImageFilter<ScalarImageType> GradientFilterType;
-        auto gradientFilter = GradientFilterType::New();
-        gradientFilter->SetInput(caster->GetOutput());
-        gradientFilter->SetSigma(m_NoiseScale);
-        
-        typedef typename GradientFilterType::OutputImageType CovariantVectorImageType;
-        typedef typename GradientFilterType::CovariantVectorType CovariantVectorType;
-        
-        struct RankOneTensorFunctor {
-            TensorType operator()(const CovariantVectorType & u) const {
-                TensorType m;
-                for(int i=0; i<Dimension; ++i)
-                    for(int j=0; j<Dimension; ++j)
-                        m(i,j) = u[i]*u[j];
-                return m;
-            }
-        };
-        
-        typedef UnaryFunctorImageFilter<CovariantVectorImageType, TensorImageType, RankOneTensorFunctor> ImageFunctorType;
-        auto imageFunctor = ImageFunctorType::New();
-        imageFunctor->SetInput(gradientFilter->GetOutput());
-        
-        typedef RecursiveGaussianImageFilter<TensorImageType> GaussianFilterType;
-        auto gaussianFilter = GaussianFilterType::New();
-        gaussianFilter->SetInput(imageFunctor->GetOutput());
-        gaussianFilter->SetSigma(m_FeatureScale);
-
-        gaussianFilter->Update();
-        this->GraftOutput(gaussianFilter->GetOutput());        
-    }
-    
-    
 }
+
+#include "StructureTensorImageFilter.hxx"
 
 #endif

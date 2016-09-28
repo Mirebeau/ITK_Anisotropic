@@ -27,7 +27,7 @@ int MatlabLinearAnisotropicDiffusion(mxIO & IO){
     
     typedef itk::Image<PixelType,Dimension> ImageType;
     typedef itk::Image<NormType,Dimension> MetricImageType;
-    typedef itk::LinearAnisotropicDiffusionLBRImageFilter<ImageType, MetricImageType> DiffType;
+    typedef itk::LinearAnisotropicDiffusionLBRImageFilter<ImageType> DiffType;
     
     
     auto diffusionFilter = DiffType::New();
@@ -88,8 +88,8 @@ int MatlabCoherenceEnhancingDiffusion(mxIO & IO){
     diffusionFilter->SetFeatureScale(IO.GetObject<ValueType>("FeatureScale",5*h));
     
     if(IO.GetObject<ValueType>("EdgeEnhancement",0))
-            diffusionFilter->SetEnhancement(DiffusionFilterType::Edge);
-    else    diffusionFilter->SetEnhancement(DiffusionFilterType::Coherence);
+            diffusionFilter->SetEnhancement(DiffusionFilterType::cEED);
+    else    diffusionFilter->SetEnhancement(DiffusionFilterType::cCED);
     diffusionFilter->SetExponent(IO.GetObject<ValueType>("Exponent",2));
     diffusionFilter->SetLambda(IO.GetObject<ValueType>("Lambda", 4));
     diffusionFilter->SetAlpha(IO.GetObject<ValueType>("Alpha",0.01));

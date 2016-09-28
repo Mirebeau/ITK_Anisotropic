@@ -18,7 +18,6 @@
 bool
 mxIO::HasField(std::string fieldName) const {
     return mxGetFieldNumber(mxInput, fieldName.c_str()) >= 0;
-//    return mxGetField(mxInput,0,fieldName.c_str());
 }
 
 std::string mxIO::GetNameOfClass() const {
@@ -59,25 +58,7 @@ mxIO::~mxIO(){
         mxSetField(*mxOutput, 0, stringStarts[i], output[i].second);
     
     delete allStrings;
-    
-    /*
-     // For some reason, the old compact version stopped working ... ?
-    std::vector<const char *> fieldNames;
-    for(auto nameValue:output)
-                fieldNames.push_back(nameValue.first.c_str());
-    
-    if(*mxOutput != NULL) { // Useless it seems
-        MexMsg() << "Destroyed previous data\n";
-        mxDestroyArray(*mxOutput);
-    };
-    
-    const mwSize dims[]={1,1};
-    *mxOutput = mxCreateStructArray(2,dims,output.size(),&fieldNames[0]);
-    
-    for(auto stringArray:output)
-        mxSetField(*mxOutput, 0, stringArray.first.c_str(), stringArray.second);
-     */
-    
+        
     /* // Testing
      const char * fieldnames[2]={"Hello", "Bye"};
      const mwSize dims[]={1,1};

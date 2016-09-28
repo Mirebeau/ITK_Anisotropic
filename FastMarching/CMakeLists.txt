@@ -15,7 +15,7 @@ add_definitions(-std=c++11)
 
 
 # Find ITK.
-include(../ITK_DIR.txt)
+#include(../ITK_DIR.txt)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
@@ -42,7 +42,7 @@ set(ITKFM_Headers
 add_executable(ITKFM ITKFM.cxx ${ITKFM_Headers})
 add_executable(UserMain          "Testing/UserMain.cxx")
 add_executable(IsotropicTests   "Testing/AFMIFTest.cxx")
-add_executable(AnisotropicTests "Testing/AFMIFTest2.cxx" ${AFMIF_Test2_Headers})
+add_executable(AnisotropicTests "Testing/AFMIFTest2.cxx" ${AFMIF_Tests2_Headers})
 
 
 

@@ -23,11 +23,11 @@ namespace itk {
 
  Edge enhancing diffusion \f$\lambda_i := g(\mu_{\rm max} - \mu_i)\f$, where  \f$g(s) = \alpha + (1-\alpha)*exp(-(\lambda/s)^m)\f$. Note the limit values \f$g(0) = \alpha\f$, \f$g(\infty) = 1\f$.
  */
-    template<typename TImage>
-    class CoherenceEnhancingDiffusionFilter : public AnisotropicDiffusionLBRImageFilter<TImage> {
+    template<typename TImage,typename TScalar=typename TImage::PixelType>
+    class CoherenceEnhancingDiffusionFilter : public AnisotropicDiffusionLBRImageFilter<TImage,TScalar> {
     public:
         typedef CoherenceEnhancingDiffusionFilter Self;
-        typedef AnisotropicDiffusionLBRImageFilter<TImage> Superclass;
+        typedef AnisotropicDiffusionLBRImageFilter<TImage,TScalar> Superclass;
         typedef SmartPointer<Self> Pointer;
         typedef SmartPointer<const Self> ConstPointer;
         
@@ -49,37 +49,66 @@ namespace itk {
         itkGetMacro(Lambda, ScalarType);
         itkGetMacro(Alpha, ScalarType);
         
-        enum EnhancementType {Coherence, Edge};
-        /// Switch between CED and EED.
+        enum EnhancementType {CED, cCED, EED, cEED, Isotropic};
+        /// Switch between CED, EED, and variants.
         itkSetEnumMacro(Enhancement, EnhancementType);
         itkGetEnumMacro(Enhancement, EnhancementType);
         
     protected:
-        ScalarType m_Lambda = 4;
-        ScalarType m_Exponent = 2;
-        ScalarType m_Alpha = 0.01;
-        EnhancementType m_Enhancement = Coherence;
+        ScalarType m_Lambda;
+        ScalarType m_Exponent;
+        ScalarType m_Alpha;
+        EnhancementType m_Enhancement;
         
-        ScalarType g_CED(ScalarType s) const {return s<=0 ? 1 : 1 - (1-m_Alpha)*exp(-1/pow(s/m_Lambda,m_Exponent));}
-        ScalarType g_EED(ScalarType s) const {return s<=0 ? m_Alpha : m_Alpha + (1-m_Alpha)*exp(-1/pow(s/m_Lambda,m_Exponent));}
+        ScalarType g_CED(ScalarType s) const {return s<=0 ? m_Alpha : m_Alpha + (1-m_Alpha)*exp(-pow(m_Lambda/s,m_Exponent));}
+        ScalarType g_EED(ScalarType s) const {return s<=0 ? 1 : 1 - (1-m_Alpha)*exp(-pow(m_Lambda/s,m_Exponent));}
+        
+        CoherenceEnhancingDiffusionFilter(){
+            m_Lambda = 0.05;
+            m_Exponent = 2;
+            m_Alpha = 0.01;
+            m_Enhancement = CED;
+        }
     };
     
-    template<typename TI>
-    typename CoherenceEnhancingDiffusionFilter<TI>::EigenValuesArrayType
-    CoherenceEnhancingDiffusionFilter<TI>::EigenValuesTransform(const EigenValuesArrayType & ev0) const {
+    template<typename TI,typename TS>
+    typename CoherenceEnhancingDiffusionFilter<TI,TS>::EigenValuesArrayType
+    CoherenceEnhancingDiffusionFilter<TI,TS>::EigenValuesTransform(const EigenValuesArrayType & ev0) const {
         static const int Dimension = Superclass::Dimension;
-        ScalarType evMin = ev0[0], evMax = ev0[Dimension-1];
+        const ScalarType evMin = ev0[0], evMax = ev0[Dimension-1];
         EigenValuesArrayType ev;
         switch(m_Enhancement){
-            case Coherence:
+                
+                // Weickert's filter.
+            case CED:
                 for(int i=0; i<Dimension; ++i)
-                    ev[i] = g_CED(ev0[i]-evMin);
+                    ev[i] = g_CED(evMax-ev0[i]);
                 break;
                 
-            case Edge:
+                // A variance, requiring stronger coherence.
+            case cCED:
                 for(int i=0; i<Dimension; ++i)
-                    ev[i] = g_EED(evMax-ev0[i]);
+                    ev[i] = g_CED( (evMax-ev0[i])/(1.+ev0[i]/m_Lambda) );
                 break;
+
+                // Weickert's filter.
+            case EED:
+                for(int i=0; i<Dimension; ++i)
+                    ev[i] = g_EED(ev0[i]-evMin);
+                break;
+                
+                // A variant, promoting diffusion in at least one direction at each point.
+            case cEED:
+                for(int i=0; i<Dimension; ++i)
+                    ev[i] = g_EED(ev0[i]);
+                break;
+
+                // Isotropic tensors, closely related to Perona-Malik's approach.
+            case Isotropic:
+                for (int i=0; i<Dimension; ++i)
+                    ev[i] = g_EED(evMax);
+                break;
+
             default:
                 itkExceptionMacro("Unsupported diffusion type");
         }

@@ -56,7 +56,7 @@ namespace itk {
         Riemannian3DNorm(const Superclass &S):Superclass(S){};
         Riemannian3DNorm(const Superclass &M, const SpacingType &s)
         {
-            for(int i=0; i<Dimension; ++i) for(int j=i; j<Dimension; ++j) this->coef(i,j)=M(i,j)*s[i]*s[j];
+            for(int i=0; i<(int)Dimension; ++i) for(int j=i; j<(int)Dimension; ++j) this->coef(i,j)=M(i,j)*s[i]*s[j];
         }
         
         

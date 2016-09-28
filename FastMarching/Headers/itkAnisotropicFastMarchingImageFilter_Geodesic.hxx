@@ -145,7 +145,7 @@ namespace itk {
         std::vector<GeodesicContinuousIndex> PV;
         PV.push_back(GeodesicContinuousIndex(c));
         Geodesic(PV);
-        for(int i=1; i<PV.size(); ++i)
+        for(size_t i=1; i<PV.size(); ++i)
             indices.push_back(PV[i].GetContinuousIndex());
 
         return true;
@@ -168,7 +168,7 @@ namespace itk {
         indices.push_back(c);
         Geodesic(indices);
         
-        for(int i=1; i<indices.size(); ++i){
+        for(size_t i=1; i<indices.size(); ++i){
             PointType q;
             Norms->TransformContinuousIndexToPhysicalPoint(indices[i],q);
             points.push_back(q);

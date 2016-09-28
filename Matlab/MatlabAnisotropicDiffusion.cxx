@@ -4,9 +4,7 @@
 
 #include "MexInterface.h"
 #include "AnisotropicDiffusion.h"
-
-#include "Riemannian2DNorm.h"
-#include "Riemannian3DNorm.h"
+#include "itkSymmetricSecondRankTensor.h"
 
 EXTERN_C
 int __mexFunction__(int nlhs, mxArray *plhs[],
@@ -37,17 +35,14 @@ int __mexFunction__(int nlhs, mxArray *plhs[],
         MexWarnMsg() << "Field PixelDimension should be >=1";
     }*/
     
-    typedef itk::Riemannian2DNorm<double> Riemannian2DNorm;
-    typedef itk::Riemannian3DNorm<double> Riemannian3DNorm;
-    
-//    typedef itk::SymmetricSecondRankTensor<double,2> SSRT2; //itk::SSRT2<double>
-//    typedef itk::SymmetricSecondRankTensor<double,3> SSRT3;
+    typedef itk::SymmetricSecondRankTensor<double,2> SSRT2; //itk::SSRT2<double>
+    typedef itk::SymmetricSecondRankTensor<double,3> SSRT3;
     
     try {
         switch (imageDimension) {
-            case 2: return AnisotropicDiffusion<Riemannian2DNorm>(IO);
-            case 3: return AnisotropicDiffusion<Riemannian3DNorm>(IO);
-                                
+            case 2: return AnisotropicDiffusion<SSRT2>(IO);
+            case 3: return AnisotropicDiffusion<SSRT3>(IO);
+                
             default:
                 MexWarnMsg() << "Field ImageDimension should indicate 2 or 3\n";
                 return EXIT_FAILURE;

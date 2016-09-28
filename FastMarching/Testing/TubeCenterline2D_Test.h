@@ -373,7 +373,7 @@ namespace AnisotropicFastMarching_TubeCenterline2D_Test {
         
         itk::Index<ExtendedDimension> extendedIndex;
         itk::Size<ExtendedDimension> extendedSize;
-        for(int i=0; i<Dimension; ++i){
+        for(int i=0; i<(int)Dimension; ++i){
             extendedIndex[i] = region.GetIndex(i);
             extendedSize[i] = region.GetSize(i);
         }

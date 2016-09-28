@@ -20,8 +20,8 @@ namespace itk  {
         if(this->IsDiagonal()) return;
                 
         VectorType Basis[Dimension];
-        for(int i=0; i<Dimension; ++i)
-            for(int j=0; j<Dimension; ++j)
+        for(int i=0; i<(int)Dimension; ++i)
+            for(int j=0; j<(int)Dimension; ++j)
                 Basis[i][j]= (i==j);
         /*
          // Use of a static variable to help reduce the number of iterations in lattice basis reduction.
@@ -41,7 +41,7 @@ namespace itk  {
         
         const int size = l.size();
         l.resize(size+Dimension);
-        for(int i=0; i<Dimension; ++i){
+        for(int i=0; i<(int)Dimension; ++i){
             l[size+i] = CompressedOffsetType(Basis[i]);
 //            CompressedOffsetType &u = l[size+i];
 //            const VectorType &U = Basis[i];
@@ -229,7 +229,7 @@ namespace itk  {
     Riemannian3DNorm<TC,TSO>::ShortOffset_to_Offset(const ShortOffsetType &u)
     {
         OffsetType U; 
-        for(int i=0; i<Dimension; ++i) U[i]=u[i];
+        for(int i=0; i<(int)Dimension; ++i) U[i]=u[i];
         return U;
     }
     
@@ -269,7 +269,7 @@ namespace itk  {
 //        ShortOffsetType I[max_nN];
         VectorType V[max_nN];
         ValueType d0[max_nN]; 
-        for(int i=0; i<nN; ++i){
+        for(int i=0; i<(int)nN; ++i){
             const unsigned int z_i = N[i];
             const ShortOffsetType Iz=stencil[z_i];
             V[i]=VectorType(Iz);
@@ -281,7 +281,7 @@ namespace itk  {
         }
         
         // Minimizations associated to edges
-        for(int i=0; i<nN; ++i){
+        for(int i=0; i<(int)nN; ++i){
             if(!B[i]) continue;
             const VectorType Vz=V[i];
             const ValueType Dz=d0[i];
@@ -319,7 +319,7 @@ namespace itk  {
         }
         
         // Minimizations associated to faces
-        for(int i=0; i<nN; ++i){
+        for(int i=0; i<(int)nN; ++i){
             const int j=(i+1)%nN;
             if(!B[i] || !B[j]) continue;
             

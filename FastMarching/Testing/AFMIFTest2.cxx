@@ -19,6 +19,7 @@ using std::endl;
 #include "Segmentation_Image.h"
 #include "Topographic_Image.h"
 #include "TubeCenterline2D_Image.h"
+#include "IllustrationCode.h"
 //#include "TubularBand_Test.h"
 //#include "Topographic_Test.h"
 
@@ -26,18 +27,18 @@ int main(int argc, char* argv[])
 {
     std::cout << "Hello world" << std::endl;
     
-//    AnisotropicFastMarching_Segmentation_Test::GenerateImage();
-//    AnisotropicFastMarching_Segmentation_Test::RunTest();
+    AnisotropicFastMarching_Segmentation_Test::GenerateImage();
+    AnisotropicFastMarching_Segmentation_Test::RunTest();
     
 //    AnisotropicFastMarching_Topographic_Test::GenerateImage();
 //    AnisotropicFastMarching_Topographic_Test::RunTest();
     
-    AnisotropicFastMarching_TubeCenterline2D_Test::GenerateImage_Tree();
-    AnisotropicFastMarching_TubeCenterline2D_Test::RunTest_Tree();
+//?    AnisotropicFastMarching_TubeCenterline2D_Test::GenerateImage_Tree();
+//?    AnisotropicFastMarching_TubeCenterline2D_Test::RunTest_Tree();
     
 //    AnisotropicFastMarching_TubeCenterline2D_Test::RunTest_Multiscale();
     
-    AnisotropicFastMarching_TubeCenterline2D_Test::GenerateImage();
+//?    AnisotropicFastMarching_TubeCenterline2D_Test::GenerateImage();
 //    AnisotropicFastMarching_TubeCenterline2D_Test::RunTest_ConstantRadius();
     
 //    auto source = itk::CurveNeighborhoodSource<itk::Image<float,2> >::New();

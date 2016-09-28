@@ -23,10 +23,11 @@ if true
     input.Image = double(input.Image);
 %    input.Image = input.Image/max(input.Image(:));
     
-    input.DiffusionTime = 10;
+    input.DiffusionTime = 8;
     input.EdgeEnhancement = 1;
     input.NoiseScale = 0.5;
-    input.Alpha=0.001;
+    input.Alpha=0.01;
+    input.Lambda = 0.02;
     input.FeatureScale=4;
     output = AnisotropicDiffusion(input);
     imshow(output.SmoothedImage/max(output.SmoothedImage(:))); 

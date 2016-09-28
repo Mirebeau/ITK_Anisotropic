@@ -28,7 +28,7 @@ namespace itk {
     void ExportTensorToTXT(std::ostream &f, ImageIterator it, Size<Dimension> N, bool one_per_line=false)
     {
         it.GoToBegin();
-        const unsigned int dim = N.Dimension;
+        const int dim = (int)Dimension;
         int prod[dim]; prod[0]=N[0]; for(int k=1; k<dim; ++k) prod[k]=N[k]*prod[k-1];
         for(int k=0; k<dim; ++k) f<<"{";
         if(!it.IsAtEnd()) {f<<it.Value(); ++it;}
@@ -43,7 +43,7 @@ namespace itk {
         assert(i==prod[dim-1]); //size and format must match
     }
 
-    
+    /*
 #pragma message("To do : should not be used anymore, thanks to the new geodesic functions")
     template<class GeodesicContinuousIndex>
     void ExportGeodesicToTXT(std::ostream &f, std::vector<GeodesicContinuousIndex> &geodesic)
@@ -61,7 +61,7 @@ namespace itk {
         }
         f << "}";
     }
-    
+    */
     
     class MathematicaExporterType {
         std::ofstream & f; // Cannot be a data member due to implicit copies in std::for_each
@@ -78,7 +78,7 @@ namespace itk {
             assert(D>0); // Only supports arrays of positive length
 //            static_assert(D>0,"Only supports arrays of positive length");
             f << "{" << p[0];
-            for(int i=1; i<D; ++i)
+            for(int i=1; i<(int)D; ++i)
                 f << "," << p[i];
             f << "}";
         }

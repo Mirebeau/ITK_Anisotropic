@@ -18,5 +18,4 @@
     virtual type &          Get##name()         {return this->m_##name;} \
     virtual const type &    Get##name() const   {return this->m_##name;} \
     virtual void Set##name(const type & _arg) {m_##name = _arg; this->Modified();}
-
 #endif

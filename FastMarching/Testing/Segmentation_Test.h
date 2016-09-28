@@ -132,7 +132,7 @@ namespace AnisotropicFastMarching_Segmentation_Test {
                     const ScalarType orthogonalSpeedInv2 = 1/(orthogonalSpeed*orthogonalSpeed);
                     if(g.GetNorm()!=0) g.Normalize();
                     
-                    for(int i=0; i<Dimension; ++i)
+                    for(int i=0; i<(int)Dimension; ++i)
                         for(int j=0; j<=i; ++j)
                             m(i,j) = tangentSpeedInv2*(i==j) + (orthogonalSpeedInv2-tangentSpeedInv2)*g[i]*g[j];
                     assert(m.IsDefinite());
@@ -180,7 +180,7 @@ namespace AnisotropicFastMarching_Segmentation_Test {
                     
                     m.SetIdentity();
                     m.GetM() /= orthogonalSpeed*orthogonalSpeed;
-                    for(int i=0; i<Dimension; ++i)
+                    for(int i=0; i<(int)Dimension; ++i)
                         m.GetOmega()[i] = (1./orthogonalSpeed-1./tangentSpeed)*g[i];
                     return m;
                 }

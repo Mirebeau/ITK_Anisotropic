@@ -57,8 +57,8 @@ namespace itk
         typedef TComponent ValueType;
         typedef TShortOffsetValue ShortOffsetValueType;
         
-        typedef Vector<ValueType,Dimension> VectorType;   
-        typedef CovariantVector<ValueType,Dimension> CovariantVectorType;    
+        typedef Vector<ValueType,Dimension> VectorType;
+        typedef CovariantVector<ValueType,Dimension> CovariantVectorType;
         typedef Riemannian2DNorm<ValueType,ShortOffsetValueType> Riemannian2DNorm;
         typedef std::pair<Riemannian2DNorm, VectorType> Superclass1;
         typedef AdaptiveStencilRefinement2DNormBase<false, ShortOffsetValueType> Superclass2;
@@ -88,7 +88,7 @@ namespace itk
         Finsler2DNorm(const Finsler2DNorm &S, const SpacingType &s)
         {
             GetM() = Riemannian2DNorm(S.GetM(),s);
-            for(int i=0; i<Dimension; ++i) GetOmega()[i] = S.GetOmega()[i]*s[i];
+            for(int i=0; i<(int)Dimension; ++i) GetOmega()[i] = S.GetOmega()[i]*s[i];
         }
         
         
@@ -111,6 +111,7 @@ namespace itk
         
         void GetCompressedStencil(std::vector<CompressedOffsetType> &l) const
         {
+            if(IsInfinite()) return;
             assert(IsDefinite());
             return Superclass2::CompressedStencil(*this,l);
         }
@@ -123,15 +124,15 @@ namespace itk
         
         void SetNthComponent(int c, const ComponentType &v)
         {
-            assert(0<=c && c <GetNumberOfComponents());
-            if(c<Riemannian2DNorm::GetNumberOfComponents()) GetM().SetNthComponent(c,v);
+            assert(0<=c && c <(int)GetNumberOfComponents());
+            if(c<(int)Riemannian2DNorm::GetNumberOfComponents()) GetM().SetNthComponent(c,v);
             else GetOmega().SetNthComponent(c-Riemannian2DNorm::GetNumberOfComponents(),v);
         }
         
         ComponentType GetNthComponent(int c)
         {
-            assert(0<=c && c<GetNumberOfComponents());
-            if(c<Riemannian2DNorm::GetNumberOfComponents()) return GetM().GetNthComponent(c);
+            assert(0<=c && c<(int)GetNumberOfComponents());
+            if(c<(int)Riemannian2DNorm::GetNumberOfComponents()) return GetM().GetNthComponent(c);
             else return GetOmega()[c-Riemannian2DNorm::GetNumberOfComponents()];
         }
         
@@ -139,6 +140,8 @@ namespace itk
         {
             GetM().SetIdentity(); GetOmega().Fill(ValueType(0.));
         }
+        
+        bool IsInfinite() const {return GetM().IsInfinite();}
         
         bool IsDefinite() const
         {
@@ -164,7 +167,7 @@ namespace itk
             const ComponentType delta = 1.-v*w;
             const ComponentType delta2 = delta*delta;
             Finsler2DNorm norm;
-            for(int i=0; i<Dimension; ++i)
+            for(int i=0; i<(int)Dimension; ++i)
                 for(int j=0; j<=i; ++j)
                     norm.GetM()(i,j) = (w[i]*w[j]+delta*m(i,j))/delta2;
             norm.GetOmega()=-w/delta;

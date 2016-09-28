@@ -42,7 +42,7 @@ int AnisotropicFastMarching_EarlyAbort(mxIO & IO){
     if(checkData){
         itk::ImageRegionConstIteratorWithIndex<MetricImageType> it(Metric, Metric->GetBufferedRegion());
         for(it.GoToBegin(); !it.IsAtEnd(); ++it)
-            if(!(it.Value().IsDefinite())){
+            if(!(it.Value().IsDefinite() || it.Value().IsInfinite())){
                 MexWarnMsg() << "Invalid data !" << it.Value() << " at position " << it.GetIndex() << ".";
                 return EXIT_FAILURE;
             } // if not definite

@@ -32,7 +32,7 @@ namespace itk {
         typedef typename StencilData::ReverseStencilType ReverseStencilType;
         ReverseStencilType rStencil = Stencils.Reverse(index);
         
-        for(int pos=0; pos<rStencil.size(); ++pos){
+        for(int pos=0; pos<(int)rStencil.size(); ++pos){ 
             const IndexType neighIndex = 
             index-NormType::ShortOffset_to_Offset(rStencil[pos]);
             
