@@ -4,6 +4,9 @@ if(COMMAND CMAKE_POLICY)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND CMAKE_POLICY)
 
+#set(CMAKE_MACOSX_RPATH 1)
+
+
 include(UserDirectories.txt)
 
 # This project is designed to be built outside the Insight source tree.

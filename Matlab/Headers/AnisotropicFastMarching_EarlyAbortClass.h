@@ -10,7 +10,7 @@
 #define MatlabITK_AnisotropicFastMarching_Vijaya_h
 
 #include "itkAnisotropicFastMarchingImageFilter.h"
-#include "MexMessageWrapper.h"
+#include "mexMessageWrapper.h"
 
 namespace itk {
     

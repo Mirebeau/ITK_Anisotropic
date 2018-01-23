@@ -60,7 +60,7 @@ namespace itk {
         
         bool m_UseGradientRecursiveGaussianImageFilter;
     protected:
-        virtual void GenerateData();
+        virtual void GenerateData() override;
         
         ScalarType m_FeatureScale, m_NoiseScale;
         bool m_RescaleForUnitMaximumTrace;

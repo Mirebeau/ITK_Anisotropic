@@ -12,7 +12,7 @@
 #include "itkAnisotropicFastMarchingImageFilter.h"
 #include "AnisotropicFastMarching_EarlyAbortClass.h"
 
-#include "MexMessageWrapper.h"
+#include "mexMessageWrapper.h"
 #include "mxIO.h"
 
 template<typename NormType>

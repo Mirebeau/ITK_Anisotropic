@@ -97,7 +97,7 @@ namespace itk
         };
                 
         // *************** Computation *****************
-        virtual void GenerateData();
+        virtual void GenerateData() override;
         virtual void GenerateStencils(); /// Automatically called by GenerateData
         virtual void ImageUpdateLoop(); /// Automatically called by GenerateData
         

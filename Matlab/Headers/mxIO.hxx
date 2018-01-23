@@ -9,7 +9,7 @@
 #ifndef MatlabITK_mxIO_hxx
 #define MatlabITK_mxIO_hxx
 
-#include "MexMessageWrapper.h"
+#include "mexMessageWrapper.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkPermuteAxesImageFilter.h"
 #include <numeric>

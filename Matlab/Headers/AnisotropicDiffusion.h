@@ -14,7 +14,7 @@
 #include "LinearAnisotropicDiffusionLBRImageFilter.h"
 #include "CoherenceEnhancingDiffusionFilter.h"
 
-#include "mexMessageWrapper.h"
+#include "MexMessageWrapper.h"
 #include "mxIO.h"
 
 template<typename NormType>

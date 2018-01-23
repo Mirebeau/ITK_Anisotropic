@@ -24,15 +24,15 @@ struct MexMessageWrapper {
         const char * msg = oss.str().c_str();
         switch (MessageGrade) {
             case Warning:
-                mexWarnMsgTxt(msg);
+                mexWarnMsgIdAndTxt("ITKFM:Warning","%s",oss.str().c_str());
                 break;
                 
             case Error:
-                mexErrMsgTxt(msg);
+                mexWarnMsgIdAndTxt("ITKFM:Error","%s",oss.str().c_str());
                 break;
                 
             default:
-                printf(msg);
+                mexPrintf("%s",oss.str().c_str());
                 break;
         };
     };

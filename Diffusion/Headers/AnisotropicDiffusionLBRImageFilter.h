@@ -98,7 +98,7 @@ namespace itk
         ScalarType m_DiffusionTime;
         bool m_Adimensionize;
         
-        virtual void GenerateData();
+        virtual void GenerateData() override;
         
         EffectiveTimesAndIterationsType m_LinearFilterEffectiveTimesAndIterations;
         

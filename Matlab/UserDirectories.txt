@@ -1,5 +1,5 @@
 #set(ITK_DIR "/Users/mirebeau/bin/InsightToolkit/InsightToolkit-4.3.1")
-set(MATLAB_APP "/Applications/MATLAB_R2012b.app")
+set(MATLAB_APP "/Applications/MATLAB_R2017b.app")
 
 set(MATLAB_LIB_SUBDIR "/bin/maci64")
 set(MATLAB_INCLUDE_SUBDIR "/extern/include")

@@ -1,7 +1,5 @@
 #include <iostream>
 
-#define NDEBUG
-
 #include "MexInterface.h"
 #include "AnisotropicFastMarching_EarlyAbort.h"
 
@@ -15,8 +13,9 @@
 EXTERN_C
 int __mexFunction__(int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[] ){
-    
+    mexPrintf("Hello world\n");
     MexMsg() << "AnisotropicFastMarching_EarlyAbort.\n";
+    mexPrintf("Matlab direct printf");
     
     if(nrhs!=1) {
         MexWarnMsg() << "Exactly one input parameter needed";
@@ -53,6 +52,8 @@ int __mexFunction__(int nlhs, mxArray *plhs[],
         return EXIT_SUCCESS;
     }
 
+    MexMsg() << "Hi there ! (2) blabalbla \n";
+    
     if(nlhs!=1) {
         MexWarnMsg() << "Exactly one output parameter needed";
         MexMsg() << "Output fields description\n"
@@ -78,7 +79,6 @@ int __mexFunction__(int nlhs, mxArray *plhs[],
     typedef itk::ExtendedNorm<Finsler2DNorm>    Finsler2DNormExt;
     typedef itk::ExtendedNorm<Riemannian3DNorm> Riemannian3DNormExt;
     
-    MexMsg() << "Hi there ! (2)\n";
     try {
         const char * normName = IO.GetStringField("NormType");
 

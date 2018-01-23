@@ -37,7 +37,7 @@ namespace itk {
         itkTypeMacro(CoherenceEnhancingDiffusionFilter, Superclass);
         
         typedef typename Superclass::EigenValuesArrayType EigenValuesArrayType;
-        virtual EigenValuesArrayType EigenValuesTransform(const EigenValuesArrayType &) const;
+        virtual EigenValuesArrayType EigenValuesTransform(const EigenValuesArrayType &) const override;
         
         typedef typename Superclass::ScalarType ScalarType;
         /// Exponent m involved in the function g defining eigenvalues.
