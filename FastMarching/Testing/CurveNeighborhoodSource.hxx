@@ -198,8 +198,8 @@ namespace itk {
             }
         };
         
-        typedef BinaryFunctorImageFilter<ScalarImageType, ScalarImageType, ScalarImageType, FunctorType> FunctorType;
-        typename FunctorType::Pointer functor = FunctorType::New();
+        typedef BinaryFunctorImageFilter<ScalarImageType, ScalarImageType, ScalarImageType, FunctorType> BinFunctorType;
+        typename BinFunctorType::Pointer functor = BinFunctorType::New();
         functor->SetInput2(ComputeAtRightFuzzyPredicate());
         functor->SetInput1(this->GetOutput());
         functor->Update();

@@ -15,6 +15,7 @@
 
 #include "Riemannian2DNorm.h"
 #include "Finsler2DNorm.h"
+#include "AsymmetricQuadratic2DNorm.h"
 #include "Riemannian3DNorm.h"
 #include "ExtendedNorm.h"
 
@@ -35,6 +36,36 @@ namespace CommandLineMain_Subroutines {
     using std::cerr;
 }
 
+template<typename ScalarType> int CommandLineMain(int argc, char * argv[]);
+
+
+int CommandLineMain(int argc, char * argv[]){
+    using std::cerr;
+    using std::endl;
+    using namespace itk;
+
+    if(argc<3+1) {
+        CommandLineMain_Subroutines::Usage();
+        return EXIT_FAILURE;
+    }
+    
+    const int maxDimension = 4;
+    const char *ImageFileName =argv[0+1];
+    auto reader = ImageFileReader<Image<unsigned char,maxDimension> >::New();
+    reader->SetFileName(ImageFileName);
+    reader->UpdateOutputInformation(); //try, catch ?
+    const auto io = reader->GetImageIO();
+    
+    auto ComponentType = io->GetComponentType();
+    enum {FLOAT = itk::ImageIOBase::FLOAT, DOUBLE = itk::ImageIOBase::DOUBLE};
+    switch(ComponentType){
+        case FLOAT  :   return CommandLineMain<float>( argc, argv);
+        case DOUBLE :   return CommandLineMain<double>(argc, argv);
+        default     :   return EXIT_FAILURE;
+    }
+}
+
+template<typename ScalarType>
 int CommandLineMain(int argc, char * argv[])
 {
     using std::cerr;
@@ -42,79 +73,45 @@ int CommandLineMain(int argc, char * argv[])
     using namespace itk;
     using namespace CommandLineMain_Subroutines;
     
-    if(argc<3+1) {Usage(); return EXIT_FAILURE;}
     const int maxDimension = 4;
     const char *ImageFileName =argv[0+1];
     auto reader = ImageFileReader<Image<unsigned char,maxDimension> >::New();
     reader->SetFileName(ImageFileName);
-    
-	reader->UpdateOutputInformation(); //try, catch ?
-	
+	reader->UpdateOutputInformation();
     const auto io = reader->GetImageIO();
     
     const int NormInternalDimension = io->GetNumberOfComponents();
     const int ImageDimension = io->GetNumberOfDimensions();
     
-    const bool is_a_SSRT = (io->GetPixelType() == itk::ImageIOBase::SYMMETRICSECONDRANKTENSOR);
-    auto ComponentType = io->GetComponentType();
-    enum {FLOAT = itk::ImageIOBase::FLOAT, DOUBLE = itk::ImageIOBase::DOUBLE};
+//    const bool is_a_SSRT = (io->GetPixelType() == itk::ImageIOBase::SYMMETRICSECONDRANKTENSOR);
     
     switch( NormInternalDimension ){
-            
         case 3:
             if(ImageDimension!=2) itkGenericExceptionMacro("Unsupported dimension");
-            switch (ComponentType) {
-                case FLOAT:  return Execute<Riemannian2DNorm<float>  >(argc, argv);
-                case DOUBLE: return Execute<Riemannian2DNorm<double> >(argc, argv);
-                default: return EXIT_FAILURE;
-            }
-            
+                return Execute<Riemannian2DNorm<ScalarType>  >(argc, argv);
             
         case 4:
             if(ImageDimension!=3) itkGenericExceptionMacro("Unsupported dimension");
-            switch (ComponentType) {
-                case FLOAT:  return Execute<ExtendedNorm<Riemannian2DNorm<float>  > >(argc, argv);
-                case DOUBLE: return Execute<ExtendedNorm<Riemannian2DNorm<double> > >(argc, argv);
-                default: return EXIT_FAILURE;
-            }
+                return Execute<ExtendedNorm<Riemannian2DNorm<ScalarType>  > >(argc, argv);
             
-        case 5:
+        case 5:{
             if(ImageDimension!=2) itkGenericExceptionMacro("Unsupported dimension");
-            switch (ComponentType) {
-                case FLOAT:  return Execute<Finsler2DNorm<float>  >(argc, argv);
-                case DOUBLE: return Execute<Finsler2DNorm<double> >(argc, argv);
-                default: return EXIT_FAILURE;
-            }
-
+            if(argc>=1+5 && std::string(argv[5])=="AsymmetricQuadratic2DNorm")
+                return Execute<AsymmetricQuadratic2DNorm<ScalarType>  >(argc, argv);
+            return Execute<Finsler2DNorm<ScalarType>  >(argc, argv);
+        }
         case 6:
             if(ImageDimension!=3) itkGenericExceptionMacro("Unsupported dimension");
-            if(is_a_SSRT){
-                cout << "Riemannian3DNorm detected" << endl;
-                switch (ComponentType) {
-                    case FLOAT:  return Execute<Riemannian3DNorm<float>  >(argc, argv);
-                    case DOUBLE: return Execute<Riemannian3DNorm<double> >(argc, argv);
-                    default: return EXIT_FAILURE;
-                }
-            } else {
-                switch (ComponentType) {
-                    case FLOAT:  return Execute<ExtendedNorm<Finsler2DNorm<float>  > >(argc, argv);
-                    case DOUBLE: return Execute<ExtendedNorm<Finsler2DNorm<double> > >(argc, argv);
-                    default: return EXIT_FAILURE;
-                }
-            }
+            return Execute<Riemannian3DNorm<ScalarType>  >(argc, argv);
+            // ExtendedNorm<Finsler2DNorm> Removed because non upwind.
+            //return Execute<ExtendedNorm<Finsler2DNorm<ScalarType>  > >(argc, argv);
             
         case 7:
             if(ImageDimension!=4) itkGenericExceptionMacro("Unsupported dimension");
-            switch (ComponentType) {
-                case FLOAT:  return Execute<ExtendedNorm<Riemannian3DNorm<float>  > >(argc, argv);
-                case DOUBLE: return Execute<ExtendedNorm<Riemannian3DNorm<double> > >(argc, argv);
-                default: return EXIT_FAILURE;
-            }
+                return Execute<ExtendedNorm<Riemannian3DNorm<ScalarType>  > >(argc, argv);
             
         default: return EXIT_FAILURE;
     } // switch NormInternalDimension
-    
-//    return EXIT_SUCCESS;
 }
 
 namespace CommandLineMain_Subroutines {
@@ -128,6 +125,7 @@ namespace CommandLineMain_Subroutines {
         cerr << "Second argument : geodesic path endpoints filename (read)" << endl;
         cerr << "third argument : geodesic path filename (write)" << endl;
         cerr << "Fourth argument (optional) : ouput image filename (write)" << endl;
+        cerr << "Fifth argument (optional) : metric type. Finsler2DNorm | AsymmetricQuadratic2DNorm (other types are detected based on dimension." << endl;
 
         cerr << endl;
         

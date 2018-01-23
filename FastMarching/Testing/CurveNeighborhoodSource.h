@@ -123,7 +123,7 @@ protected:
     
 //    virtual void GenerateOutputInformation();
 //    virtual void Initialize(){};
-    virtual void GenerateData();
+    virtual void GenerateData() override;
     const ImageRegion<Dimension> & GetRegion() const {return this->GetOutput()->GetRequestedRegion();}
     
     typedef std::set<IndexType, typename IndexType::LexicographicCompare> IndexSetType;
@@ -139,7 +139,7 @@ protected:
     ScalarType m_stoppingRadius = std::numeric_limits<ScalarType>::max();
     virtual void UpdateNeighbors(const IndexType & index,
                                  const typename SuperClass::SpeedImageType * speed,
-                                 LevelSetImageType * output){
+                                 LevelSetImageType * output) override {
         if(output->GetPixel(index) > this->GetStoppingRadius()) return;
         orderedIndices.push_back(index);
         SuperClass::UpdateNeighbors(index,speed,output);

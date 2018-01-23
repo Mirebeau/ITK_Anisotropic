@@ -28,6 +28,7 @@ namespace itk {
                                        const Stencil &stencil,
                                        IndicesType &gradient_indices, WeightsType &gradient_weights) const
     {
+        
         const ShortOffsetType Iy=stencil[y_i];
         const VectorType Vy(Iy);
         const IndexType y=x+this->ShortOffset_to_Offset(Iy);

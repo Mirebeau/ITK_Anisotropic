@@ -234,7 +234,7 @@ namespace AnisotropicFastMarching_TubeCenterline2D_Test {
                     return norm;
                 }
                 
-                const ScalarType ratio = fabsf(eVal[0])/eVal[1];
+                const ScalarType ratio = std::abs(eVal[0])/eVal[1];
                 
                 ScalarType delta = vnl_math_sqr(ratio);
                 deltaMinEncountered = std::min(delta, deltaMinEncountered);

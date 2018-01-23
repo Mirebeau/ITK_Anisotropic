@@ -154,10 +154,10 @@ namespace itk {
         AnisotropicFastMarchingImageFilter(){};
         ~AnisotropicFastMarchingImageFilter(){};
         
-        virtual void Initialize(LevelSetImageType *);
+        virtual void Initialize(LevelSetImageType *) override;
         
         virtual void UpdateNeighbors(const IndexType & index,
-                                     const NormImageType *, LevelSetImageType *);
+                                     const NormImageType *, LevelSetImageType *) override;
         
         /** Due to the inherited structure, I have to pass the two following arguments from UpdateNeighbors to 
          UpdateValue as class range variables */
@@ -165,7 +165,7 @@ namespace itk {
         unsigned int YoungestAliveIndex_i;
         
         virtual double UpdateValue(const IndexType & index,
-                                   const NormImageType *, LevelSetImageType *);
+                                   const NormImageType *, LevelSetImageType *) override;
         
         bool m_GenerateUpwindGradient;
         

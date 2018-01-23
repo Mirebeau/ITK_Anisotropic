@@ -124,18 +124,6 @@ namespace itk {
         
         bool IsDefinite() const {return GetPrimaryNorm().IsDefinite() && GetScalar()>0;}
         bool IsInfinite() const {return GetPrimaryNorm().IsInfinite();}
-        
-#pragma remark("Remove when old template mess is eliminated.")
-/*
-    protected:
-        // I need to specialize here, depending on TPrimaryNorm -> Gets rather ugly.
-        typedef Riemannian2DNorm<ValueType,ShortOffsetValueType>    Riemannian2DNorm;
-        typedef Finsler2DNorm<ValueType,ShortOffsetValueType>       Finsler2DNorm;
-        typedef Riemannian3DNorm<ValueType,ShortOffsetValueType>    Riemannian3DNorm;
-
-        struct HL;
- */
-        
     }; // End of class ExtendedNorm
 
     

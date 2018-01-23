@@ -7,6 +7,7 @@
 
 #include "Riemannian2DNorm.h"
 #include "Finsler2DNorm.h"
+#include "AsymmetricQuadratic2DNorm.h"
 #include "Riemannian3DNorm.h"
 #include "ExtendedNorm.h"
 
@@ -71,17 +72,20 @@ int __mexFunction__(int nlhs, mxArray *plhs[],
     typedef itk::Riemannian2DNorm<double>   Riemannian2DNorm;
     typedef itk::Finsler2DNorm<double>      Finsler2DNorm;
     typedef itk::Riemannian3DNorm<double>   Riemannian3DNorm;
+    typedef itk::AsymmetricQuadratic2DNorm<double> AsymQuad2DNorm;
     
     typedef itk::ExtendedNorm<Riemannian2DNorm> Riemannian2DNormExt;
     typedef itk::ExtendedNorm<Finsler2DNorm>    Finsler2DNormExt;
     typedef itk::ExtendedNorm<Riemannian3DNorm> Riemannian3DNormExt;
     
+    MexMsg() << "Hi there ! (2)\n";
     try {
         const char * normName = IO.GetStringField("NormType");
 
         const int result =
         !strcmp(normName,"Riemannian2DNorm")    ? AnisotropicFastMarching_EarlyAbort<Riemannian2DNorm>(IO) :
         !strcmp(normName,"Finsler2DNorm")       ? AnisotropicFastMarching_EarlyAbort<Finsler2DNorm>(IO) :
+        !strcmp(normName,"AsymmetricQuadratic2DNorm") ? AnisotropicFastMarching_EarlyAbort<AsymQuad2DNorm>(IO) :
         !strcmp(normName,"Riemannian3DNorm")    ? AnisotropicFastMarching_EarlyAbort<Riemannian3DNorm>(IO) :
         !strcmp(normName,"Riemannian2DNormExt") ? AnisotropicFastMarching_EarlyAbort<Riemannian2DNormExt>(IO) :
         !strcmp(normName,"Finsler2DNormExt")    ? AnisotropicFastMarching_EarlyAbort<Finsler2DNormExt>(IO) :

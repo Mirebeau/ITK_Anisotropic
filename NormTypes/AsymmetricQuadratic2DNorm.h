@@ -34,13 +34,15 @@ namespace itk
      * \ingroup LevelSetSegmentation
      * \ingroup ITKFastMarching
      */
+// TODO : Compatibility with ExtendedNorm
     
     template<typename TComponent=float, typename TShortOffsetValue=char> class AsymmetricQuadratic2DNorm :
     public std::pair<Riemannian2DNorm<TComponent,TShortOffsetValue>, Vector<TComponent,2> >,
     public AdaptiveStencilRefinement2DNormBase<false, TShortOffsetValue> {
     public:
         static const unsigned int Dimension=2;
-        typedef TComponent ValueType;
+        typedef TComponent ScalarType;
+        typedef ScalarType ValueType;
         typedef TShortOffsetValue ShortOffsetValueType;
         
         typedef Vector<ValueType,Dimension> VectorType;
@@ -59,15 +61,13 @@ namespace itk
         
         ValueType Norm(const VectorType &u) const
         {
-            return GetM().Norm(u)-GetOmega()*u;
+            const ScalarType scal = std::max(ScalarType(0.),GetOmega()*u);
+            return sqrt( GetM().SquaredNorm(u) + scal*scal );
         }
         
         CovariantVectorType Gradient(const VectorType &u) const;
         
-        bool IsAcute(const VectorType &u, const VectorType &v) const
-        {
-            return Gradient(v)*u>=0 && Gradient(u)*v>=0;
-        }
+        bool IsAcute(const VectorType &u, const VectorType &v) const;
         
         AsymmetricQuadratic2DNorm(){};
         AsymmetricQuadratic2DNorm(const Superclass1 &S):Superclass1(S){};
@@ -131,16 +131,39 @@ namespace itk
         
         bool IsDefinite() const
         {
-            return GetM().IsDefinite() && GetM().GetInverse().SquaredNorm(this->second)<1;
+            return GetM().IsDefinite();
         }
         
         AsymmetricQuadratic2DNorm DualNorm() const
         {
-            assert(false);
+            AsymmetricQuadratic2DNorm result;
+            const Riemannian2DNorm mInv = GetM().Inverse();
+            const VectorType vInv = mInv*GetOmega();
+            const ScalarType vNorm2 = GetOmega()*vInv;
+            
+            VectorType & om = result.GetOmega();
+            Riemannian2DNorm m = result.GetM();
+            om = vInv/sqrt(1+vNorm2);
+            m = mInv;
+            m(0,0)  -=  om(0)*om(0);
+            m(0,1)  -=  om(0)*om(1);
+            m(1,1)  -=  om(1)*om(1);
+            
+            return result;
         }
-        static AsymmetricQuadratic2DNorm HalfDisk(ScalarType speed, const VectorType & v, ScalarType eps)
+        static AsymmetricQuadratic2DNorm HalfDisk(ScalarType speed,
+                                                  const VectorType & v)
         {
-            assert(false);
+            assert(speed>0);
+            AsymmetricQuadratic2DNorm result;
+            const ScalarType invS = 1./speed;
+            const ScalarType invS2 = invS*invS;
+
+            Riemannian2DNorm & m = result.GetM();
+            m(0,0) = invS2; m(0,1)=0.; m(1,1) = invS2;
+            
+            result.GetOmega() = v*invS;
+            return result;
         }
     };
     

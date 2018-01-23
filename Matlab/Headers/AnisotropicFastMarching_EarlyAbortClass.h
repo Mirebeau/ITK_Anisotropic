@@ -82,7 +82,7 @@ namespace itk {
         
         typedef typename SuperClass::NormImageType NormImageType;
         
-        virtual void Initialize(LevelSetImageType * output){
+        virtual void Initialize(LevelSetImageType * output) override {
             activeStoppingCriteria = None;
             SuperClass::Initialize(output);
             
@@ -101,7 +101,7 @@ namespace itk {
         // Called when point "index" is accepted (i.e. frozen)
         virtual void UpdateNeighbors(const IndexType & index,
                                      const NormImageType * norms,
-                                     LevelSetImageType * distance){
+                                     LevelSetImageType * distance) override {
             if(activeStoppingCriteria != None) return;
             stoppingIndex = index;
             

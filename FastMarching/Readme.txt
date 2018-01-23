@@ -10,7 +10,7 @@ The pixeltype of this image can be
  - 2D symmetric second rank tensor
  - 3D symmetric second rank tensor
  - 2D symmetric second rank tensor followed by a 2D vector (Asymmetric norm |u|_M - omega*u)
- - Any of the above followed by a scalar (ND+1 tubular metric)
+ - One of the first two above followed by a scalar (N+1 dimensional radius lifted metric)
 
 Since pixel types cannot be arbitrary, an image of vectors of the appropriate dimension should be used in the last two cases.
 The pixel component type can be float or double.

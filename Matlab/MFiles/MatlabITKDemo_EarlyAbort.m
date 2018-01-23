@@ -5,7 +5,8 @@ test.Iso2D = false;
 test.TipsAbort = false;
 test.EuclideanDistanceAbort = false;
 test.Aniso3D = false;
-test.StopWhenFirstIsAccepted = true;
+test.StopWhenFirstIsAccepted = false;
+test.AsymmetricQuadratic2D = true;
 
 if test.input_info 
     AnisotropicFastMarching_EarlyAbort(); 
@@ -267,6 +268,60 @@ if(test.StopWhenFirstIsAccepted)
 
     output = AnisotropicFastMarching_EarlyAbort(input);
     
+    
+    NotReached = output.Distance == max(output.Distance(:));
+    output.Distance(NotReached) = 0;
+    
+    imagesc(output.Distance);
+    for i=1:size(output.Geodesics,1)
+        rescaledGeodesic = RescaledCoords(output.Geodesics{i},input.Origin,input.Spacing);
+        line(rescaledGeodesic(1,:),rescaledGeodesic(2,:));
+    end;
+    
+    rescaledGeodesic = RescaledCoords(output.GeodesicFromStoppingPoint,input.Origin,input.Spacing);
+    line(rescaledGeodesic(1,:),rescaledGeodesic(2,:));
+
+    fprintf('\n\n');
+    pause;
+end
+
+if(test.AsymmetricQuadratic2D)
+    % This test demonstrates fast marching w.r.t. asymmetric quadratic norms, which take the form
+    %   F_x(v) = sqrt( v.M(x).v + max(0,omega(x).v)^2)
+    
+    % An interesting special case is the so called half-disk model, defined by 
+    % M(x) = Id/speed(x)^2
+    % omega(x) = (-1/eps) omega0(x)/speed(x)
+    % where 
+    % - speed is the speed function. 
+    % - eps is a relaxation parameter, e.g. eps = 1./10
+    % - omega0 is a field of unit vectors.
+    % In the limiting model, as eps->0, the length of a path is the ordinary euclidean length, weighted by 1/speed(x).
+    % However, paths which tangent has, at any point, a negative scalar product with omegav0(x), are rejected.
+    
+    disp('---- DEMO ---- AsymmetricQuadratic2DNorm (Half disk model)');
+        clear('input'); clear('output');
+    input.NormType='AsymmetricQuadratic2DNorm';
+    n=100;
+    r = linspace(-1,1,n);
+    [x,y] = meshgrid(r,r);
+    clear('options');
+    input.Origin=[x(1,1);y(1,1)];
+    input.Spacing=[x(2,2)-x(1,1); y(2,2)-y(1,1)];
+    input.TransposeFirstTwoImageCoordinates = 1;
+    
+    input.Metric = zeros(5,n,n); 
+    input.Metric(1,:,:) = 1; % Tensor field M(x). Here the identity tensor.
+    input.Metric(3,:,:) = 1;
+    
+    input.Metric(4,:,:) = 5; % Vector fied omega(x). Here a constant vector field.
+    input.Metric(5,:,:) = 5;
+    
+    input.Seeds = [0;0;0];
+    input.Tips = [0.1,-0.3,0.7,-0.9;0.3,0.4,-0.5,-0.9];
+    %input.StopWhenFirstIsAccepted = [0.6,-0.5,0.9; 0.7,0.8,-0.5];
+
+    output = AnisotropicFastMarching_EarlyAbort(input);
     
     NotReached = output.Distance == max(output.Distance(:));
     output.Distance(NotReached) = 0;

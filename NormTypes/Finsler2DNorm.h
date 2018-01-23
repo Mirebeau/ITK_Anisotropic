@@ -8,7 +8,7 @@
 
 /*
  
- A simple type of asymmetric norms : the difference of a riemannian norm and of a linear function.
+ A simple type of asymmetric norms : the difference of a riemannian norm and of a linear function, also referred to as a Rander Norm.
  
  Memory mapping for 
  Finsler2DNorm<TComponent, TShortOffsetValue>
@@ -29,7 +29,7 @@ namespace itk
 {
    
     /** \class Finsler2DNorm
-     * \brief A type of two dimensional asymmetric norm, for use in Fast Marching.
+     * \brief A type of two dimensional asymmetric norm, also referred to as a Rander Norm, for use in Fast Marching.
      *
      * This class defines an asymmetric norm of the form \f[F(x) := \sqrt{\<x, M x\>} - \<\omega,x\>.\f] 
      For this norm to be well defined, M a positive definite symmetric second rank tensor, \f$\omega \in {\mathbb R}^2$ and \f$\omega*M^{-1}*\omega < 1\f$.
@@ -48,6 +48,8 @@ namespace itk
      * \ingroup LevelSetSegmentation
      * \ingroup ITKFastMarching
      */
+    
+// TODO : Remove ExtendedNorm<Finsler2DNorm>, which is not upwind.
 
     template<typename TComponent=float, typename TShortOffsetValue=char> class Finsler2DNorm :
     public std::pair<Riemannian2DNorm<TComponent,TShortOffsetValue>, Vector<TComponent,2> >,

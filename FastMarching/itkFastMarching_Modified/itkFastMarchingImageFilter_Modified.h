@@ -333,7 +333,7 @@ private:
 protected:
   FastMarchingImageFilter_Modified();
   ~FastMarchingImageFilter_Modified(){}
-  void PrintSelf(std::ostream & os, Indent indent) const;
+  void PrintSelf(std::ostream & os, Indent indent) const override;
 
   virtual void Initialize(LevelSetImageType *);
 
@@ -346,12 +346,12 @@ protected:
   const AxisNodeType & GetNodeUsedInCalculation(unsigned int idx) const
   { return m_NodesUsed[idx]; }
 
-  void GenerateData();
+  void GenerateData() override;
 
   /** Generate the output image meta information. */
-  virtual void GenerateOutputInformation();
+  virtual void GenerateOutputInformation() override;
 
-  virtual void EnlargeOutputRequestedRegion(DataObject *output);
+  virtual void EnlargeOutputRequestedRegion(DataObject *output) override;
 
   /** Get Large Value. This value is used to
       represent the concept of infinity for the time assigned to pixels that

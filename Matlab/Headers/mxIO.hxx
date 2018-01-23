@@ -57,7 +57,7 @@ mxIO::~mxIO(){
     for(int i=0; i<output.size(); ++i)
         mxSetField(*mxOutput, 0, stringStarts[i], output[i].second);
     
-    delete allStrings;
+    delete[] allStrings;
         
     /* // Testing
      const char * fieldnames[2]={"Hello", "Bye"};
