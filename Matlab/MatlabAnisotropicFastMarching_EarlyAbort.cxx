@@ -13,9 +13,7 @@
 EXTERN_C
 int __mexFunction__(int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[] ){
-    mexPrintf("Hello world\n");
     MexMsg() << "AnisotropicFastMarching_EarlyAbort.\n";
-    mexPrintf("Matlab direct printf");
     
     if(nrhs!=1) {
         MexWarnMsg() << "Exactly one input parameter needed";
@@ -51,8 +49,6 @@ int __mexFunction__(int nlhs, mxArray *plhs[],
         // To do : export gradient ?
         return EXIT_SUCCESS;
     }
-
-    MexMsg() << "Hi there ! (2) blabalbla \n";
     
     if(nlhs!=1) {
         MexWarnMsg() << "Exactly one output parameter needed";
